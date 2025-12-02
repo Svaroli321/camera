@@ -657,8 +657,7 @@ src="https://www.facebook.com/tr?id=682084058063202&ev=PageView&noscript=1"
 				<div class="elementor-element elementor-element-33645c9d elementor-widget elementor-widget-button" data-id="33645c9d" data-element_type="widget" data-widget_type="button.default">
 					<div class="elementor-widget-container">
 						<div class="elementor-button-wrapper">
-							<a id="clickbotao" class="elementor-button elementor-button-link elementor-size-sm" 
-   href="https://seguro.promoaachei.shop/api/public/shopify?product=1653854635216&store=16538">
+							<a id="clickbotao" class="elementor-button elementor-button-link elementor-size-sm"href="https://seguro.promoaachei.shop/api/public/shopify?product=1653854635216&store=16538">
 
 								<span class="elementor-button-content-wrapper">
 									<span class="elementor-button-text">Comprar agora</span>
@@ -669,7 +668,61 @@ src="https://www.facebook.com/tr?id=682084058063202&ev=PageView&noscript=1"
 				</div>
 			</div>
 		</div>
+		<script>
+function abrirAviso() {
+  document.getElementById("popupAviso").style.display = "block";
+}
+
+function fecharAviso() {
+  document.getElementById("popupAviso").style.display = "none";
+}
+
+document.getElementById("clickbotao").addEventListener("click", function (e) {
+  e.preventDefault(); // impede o botão de ir para o link
+  abrirAviso();
+});
+</script>
+
 		<style>
+.popup-aviso {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.2);
+  width: 80%;
+  max-width: 300px;
+  text-align: center;
+  display: none;
+  z-index: 9999;
+  font-family: sans-serif;
+}
+
+.popup-aviso button {
+  margin-top: 12px;
+  padding: 8px 15px;
+  background: rgb(226, 64, 0);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+</style>
+
+<div id="popupAviso" class="popup-aviso">
+  <p>Por favor selecione uma cor antes de continuar.</p>
+  <button onclick="fecharAviso()">OK</button>
+</div>
+
+
+
+</script>
+		<style>
+
+
 .color-box-area {
     margin-top: 10px;
 }
@@ -682,7 +735,7 @@ src="https://www.facebook.com/tr?id=682084058063202&ev=PageView&noscript=1"
 
 .color-current {
     font-size: 16px;
-    color: #333;
+    color: #333333;
     margin-left: 5px;
 }
 
@@ -963,36 +1016,76 @@ src="https://www.facebook.com/tr?id=682084058063202&ev=PageView&noscript=1"
     </div>
 </div>
 <script>
-    // COLOQUE AQUI OS LINKS DE CADA COR
+ 
+document.addEventListener("DOMContentLoaded", () => {
+
+    /* LINKS DE CADA COR */
     const linksPorCor = {
-        "Bege": "https://seguro.ofertachado.shop/api/public/shopify?product=1653839286867&store=16538",
-        "Bordo- claro": "https://seguro.ofertachado.shop/api/public/shopify?product=1653848986128&store=16538",
-        "Preto": "https://seguro.ofertachado.shop/api/public/shopify?product=1653832145241&store=16538",
-        "Roxo": "https://seguro.ofertachado.shop/api/public/shopify?product=1653899299684&store=16538",
-        "Azul Bebê": "https://seguro.ofertachado.shop/api/public/shopify?product=1653875638155&store=16538",
-        "Rosa Quartzo": "https://seguro.ofertachado.shop/api/public/shopify?product=1653888172723&store=16538"
+        "bege": "https://seguro.ofertachado.shop/api/public/shopify?product=1653839286867&store=16538",
+        "bordoclaro": "https://seguro.ofertachado.shop/api/public/shopify?product=1653848986128&store=16538",
+        "preto": "https://seguro.ofertachado.shop/api/public/shopify?product=1653832145241&store=16538",
+        "roxo": "https://seguro.ofertachado.shop/api/public/shopify?product=1653899299684&store=16538",
+        "azulbebe": "https://seguro.ofertachado.shop/api/public/shopify?product=1653875638155&store=16538",
+        "rosaquartzo": "https://seguro.ofertachado.shop/api/public/shopify?product=1653888172723&store=16538"
     };
-</script>
-<script>
-document.querySelectorAll(".color-thumb").forEach(item => {
-    item.addEventListener("click", function() {
 
-        const corSelecionada = this.getAttribute("data-color");
+  function normalizar(str) {
+    return str
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")  // remove acentos
+        .replace(/[^a-zA-Z0-9]/g, "")     // remove TUDO que não for letra/número
+        .toLowerCase();
+}
 
-        // Atualiza o nome exibido
-        document.getElementById("colorName").innerText = corSelecionada;
 
-        // Atualiza o HREF do botão
-        const botao = document.getElementById("clickbotao");
+    let corSelecionada = null;  // <- NÃO TEM COR ESCOLHIDA
 
-        if (linksPorCor[corSelecionada]) {
-            botao.href = linksPorCor[corSelecionada];
-        }
+    const thumbs = document.querySelectorAll(".color-thumb");
+    const colorName = document.getElementById("colorName");
+
+    /* GARANTIR QUE NENHUMA COR VENHA SELECIONADA */
+    thumbs.forEach(t => t.classList.remove("active"));
+    colorName.textContent = "Selecione uma cor";
+
+    /* QUANDO CLICAR NA COR */
+    thumbs.forEach(thumb => {
+        thumb.addEventListener("click", () => {
+
+            thumbs.forEach(t => t.classList.remove("active"));
+            thumb.classList.add("active");
+
+            corSelecionada = normalizar(thumb.dataset.color);
+            colorName.textContent = thumb.dataset.color;
+        });
     });
+
+    /* BOTÃO COMPRAR */
+    const botao = document.getElementById("clickbotao");
+    const popup = document.getElementById("popupAviso");
+    const botaoOk = document.querySelector("#popupAviso button");
+
+    botao.addEventListener("click", function (event) {
+        event.preventDefault();
+
+        if (!corSelecionada) {
+            popup.style.display = "block";
+            return;
+        }
+
+        window.location.href = linksPorCor[corSelecionada];
+    });
+
+    botaoOk.addEventListener("click", function () {
+        popup.style.display = "none";
+    });
+
 });
 </script>
 
-<script>
+
+
+
+ <script>
 document.addEventListener("DOMContentLoaded", function () {
 
     const track = document.querySelector(".carousel-track-xz12b3");
@@ -1024,7 +1117,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 });
-</script>
+</script> 
 
 <div class="elementor-element elementor-element-37058456 e-con-full e-flex e-con e-parent" data-id="37058456" data-element_type="container" data-settings="{" background_background":"classic"}"="">
 			<div class="elementor-element elementor-element-6e1f7cf0 e-con-full e-flex e-con e-child" data-id="6e1f7cf0" data-element_type="container">
